@@ -1,0 +1,8 @@
+name = "Targets"
+uuid = "911cb31e-70cd-4e9d-a353-3054e2e6a3a8"
+authors = ["Miklós Koren <miklos.koren@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
