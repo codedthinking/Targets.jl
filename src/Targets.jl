@@ -99,7 +99,7 @@ macro target(expr)
     
     if @capture(value, func_(args__))
         quote
-            Core.eval(Variables, :($($(QuoteNode(name))) = $(Target($(QuoteNode(func)), [$(QuoteNode.(args)...)]))))
+            Core.eval(Variables, :($($(QuoteNode(name))) = $(Target($(QuoteNode(func)), Symbol[$(QuoteNode.(args)...)]))))
         end
     else
         quote
