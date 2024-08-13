@@ -1,70 +1,48 @@
 # Targets.jl
 
+Targets.jl is a Julia package for defining and managing computational targets, inspired by the `targets` library in R. It provides a simple way to create reproducible and efficient data pipelines by automatically tracking dependencies and caching results.
+
+## Features
+
+- Define targets using the `@target` macro
+- Automatically track dependencies between targets
+- Cache computed results to avoid unnecessary recomputation
+- Automatically recompute targets when dependencies change
+- Support for both simple values and function-based targets
+
+## Example Usage
+
 ```julia
-julia> using Targets
+using Targets
 
-       # Define a function and some targets
+# Define a function and some targets
+function add(x, y)
+    println("Computing the sum of $x and $y")
+    x + y
+end
 
-julia> function add(x, y)
-           println("Computing the sum of $x and $y")
-           x + y
-       end
-add (generic function with 1 method)
+@target a = 1
+@target b = 2
+@target c = add(a, b)
 
-julia> @target a = 1
-Target(1, nothing, Symbol[], "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b", true)
+# Access target values
+@get c  # Computes and caches the result
+println("The value of c is: $c")
 
-julia> @target b = 2
-Target(2, nothing, Symbol[], "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35", true)
+# Change a dependency
+@target a = 10
 
-julia> @target c = add(a, b)
+# Access c again (it will be automatically recomputed)
+@get c
 
-       # Access target values
-Target(nothing, :add, [:a, :b], "", false)
+# Redefine the function
+function add(x, y)
+    println("Computing the sum of $x and 2*$y")
+    x + 2*y
+end
 
-julia> @get c
-Computing the sum of 1 and 2
-3
-
-julia> println("The value of c is: $c")
-
-       # No computation if not needed
-The value of c is: 3
-
-julia> @get c
-3
-
-julia> println("The value of c is: $c")
-
-       # Change the value of a
-The value of c is: 3
-
-julia> @target a = 10
-
-       # Access c again (it will be automatically recomputed)
-Target(10, nothing, Symbol[], "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5", true)
-
-julia> @get c
-Computing the sum of 10 and 2
-12
-
-julia> println("The value of c is: $c")
-
-       # Redefine the function
-The value of c is: 12
-
-julia> function add(x, y)
-           println("Computing the sum of $x and 2*$y")
-           x + 2*y
-       end
-
-       # Access c again (it will be automatically recomputed)
-add (generic function with 1 method)
-
-julia> @get c
-Computing the sum of 10 and 2*2
-14
-
-julia> println("The value of c is: $c")
-The value of c is: 14
+# Access c again (it will be automatically recomputed)
+@get c
 ```
+
+Targets.jl simplifies the process of creating data pipelines by managing dependencies and caching results, making your workflow more efficient and reproducible.
