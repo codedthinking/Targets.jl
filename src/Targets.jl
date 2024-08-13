@@ -3,7 +3,7 @@ module Targets
 using SHA
 using MacroTools
 
-export @target, reset_targets!, Target, get_value
+export @target, @get, Target, get_value
 
 # this submodule will store all the variables and targets
 module Variables
@@ -100,14 +100,20 @@ macro target(expr)
     if @capture(value, func_(args__))
         quote
             Core.eval(Variables, :($($(QuoteNode(name))) = $(Target($(QuoteNode(func)), [$(QuoteNode.(args)...)]))))
-            $(esc(name)) = getfield(Variables, $(QuoteNode(name)))
         end
     else
         quote
             Core.eval(Variables, :($($(QuoteNode(name))) = $(Target($(esc(value))))))
-            $(esc(name)) = getfield(Variables, $(QuoteNode(name)))
         end
     end
+end
+
+macro get(expr)
+    expr isa Symbol || error("Invalid syntax for @get macro")
+    
+    quote
+        $expr = get_value(getfield(Targets.Variables, $(QuoteNode(expr))))
+    end |> esc
 end
 
 function reset_targets!()

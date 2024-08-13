@@ -2,12 +2,12 @@
 
 ```julia
 julia> using Targets
-Precompiling Targets
-  1 dependency successfully precompiled in 1 seconds. 1 already precompiled.
+
+       # Define a function and some targets
 
 julia> function add(x, y)
-       println("Computing sum of $x and $y")
-       x + y
+           println("Computing the sum of $x and $y")
+           x + y
        end
 add (generic function with 1 method)
 
@@ -18,29 +18,53 @@ julia> @target b = 2
 Target(2, nothing, Symbol[], "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35", true)
 
 julia> @target c = add(a, b)
+
+       # Access target values
 Target(nothing, :add, [:a, :b], "", false)
 
-julia> c |> get_value
-Computing sum of 1 and 2
+julia> @get c
+Computing the sum of 1 and 2
 3
 
-julia> c |> get_value
+julia> println("The value of c is: $c")
+
+       # No computation if not needed
+The value of c is: 3
+
+julia> @get c
 3
 
-julia> @target b = 4
-Target(4, nothing, Symbol[], "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a", true)
+julia> println("The value of c is: $c")
 
-julia> c |> get_value
-Computing sum of 1 and 4
-5
+       # Change the value of a
+The value of c is: 3
+
+julia> @target a = 10
+
+       # Access c again (it will be automatically recomputed)
+Target(10, nothing, Symbol[], "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5", true)
+
+julia> @get c
+Computing the sum of 10 and 2
+12
+
+julia> println("The value of c is: $c")
+
+       # Redefine the function
+The value of c is: 12
 
 julia> function add(x, y)
-       println("Computing sum of $x and 2*$y")
-       x + 2 * y
+           println("Computing the sum of $x and 2*$y")
+           x + 2*y
        end
+
+       # Access c again (it will be automatically recomputed)
 add (generic function with 1 method)
 
-julia> c |> get_value
-Computing sum of 1 and 2*4
-9
+julia> @get c
+Computing the sum of 10 and 2*2
+14
+
+julia> println("The value of c is: $c")
+The value of c is: 14
 ```
