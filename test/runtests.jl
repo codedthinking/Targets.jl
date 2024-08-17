@@ -25,6 +25,16 @@ mult(x, y) = x * y
         @test (@get y) == 11
     end
 
+    @testset "Indirect updating" begin
+        @target a = 1
+        @target b = add1(a)
+        @target c = add1(b)
+        @test (@get c) == 3
+
+        @target a = 2
+        @test (@get c) == 4
+    end
+
     @testset "Function modification" begin
         @target m = 3
         @target n = 4
